@@ -1,0 +1,22 @@
+service: authorizer
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: sandbox
+  region: us-west-2
+package:
+  exclude:
+    - node_modules/aws-sdk/**
+functions:
+  authorizer:
+    handler: handler.authorizer
+    # alternatively you can use arn: xxx:xxx:Lambda-Name
+    resultTtlInSeconds: 3600
+    identitySource: method.request.header.Authorization
+  derp:
+    handler: handler.derp
+    events:
+      - http:
+          path: derp
+          method: get
+          authorizer: authorizer
